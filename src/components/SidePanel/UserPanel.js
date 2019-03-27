@@ -43,7 +43,7 @@ class UserPanel extends Component {
             {/* app Header */}
             <Header inverted floated="left" as="h3">
               <Icon name="facebook messenger" />
-              <Header.Content> React- Chat - App </Header.Content>
+              <Header.Content> Chat - App </Header.Content>
             </Header>
             {/* user dropdown */}
             <Header style={{ padding: "2.25em" }} as="h4" inverted>
