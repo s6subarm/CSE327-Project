@@ -9,7 +9,11 @@ body,
 /* Message.js */
 
 .messages {
-  height: 360px;
+  height: 57vh;
+  overflow-y: scroll;
+}
+.messages__progress {
+  height: 53vh;
   overflow-y: scroll;
 }
 
@@ -36,4 +40,10 @@ body,
 
 .message__image {
   padding: 1em;
+}
+
+/* ProgressBar.js */
+
+.progress__bar {
+  margin: 0.3em 0 0 0 !important;
 }
