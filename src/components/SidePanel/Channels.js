@@ -119,8 +119,10 @@ class Channels extends Component {
             </span>
             ({channels.length})<Icon name="add" onClick={this.openModal} />
           </Menu.Item>
-          {/* display Groups */}
-          {this.displayChannels(channels)}
+          <div className="channels">
+            {/* display Groups */}
+            {this.displayChannels(channels)}
+          </div>
         </Menu.Menu>
         {/* add channel modal */}
         <Modal basic open={modal} onClose={this.closeModal}>

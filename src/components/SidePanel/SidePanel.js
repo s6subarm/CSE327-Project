@@ -8,7 +8,6 @@ export default class SidePanel extends Component {
     const { currentUser } = this.props;
     return (
       <Menu
-        className="menu"
         size="large"
         inverted
         fixed="left"

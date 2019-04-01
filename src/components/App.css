@@ -28,7 +28,8 @@ body,
   z-index: 200;
 }
 /* sidepanel.js */
-.menu {
+.channels {
+  height: 200px;
   overflow-y: scroll;
 }
 

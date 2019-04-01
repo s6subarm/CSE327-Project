@@ -174,6 +174,7 @@ export default class MessagesForm extends Component {
           />
           <Button
             color="green"
+            disabled={uploadState === "uploading"}
             onClick={this.openModal}
             content="Upload"
             labelPosition="right"

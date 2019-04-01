@@ -13,6 +13,10 @@ export default class Messages extends Component {
     messagesLoading: true,
     channel: this.props.currentChannel,
     user: this.props.currentUser,
+    numUniqueUsers: "",
+    searchTerm: "",
+    searchLoading: false,
+    searchResults: [],
     progressBar: false
   };
 
@@ -36,8 +40,47 @@ export default class Messages extends Component {
         messages: loadMessages,
         messagesLoading: false
       });
+      this.countUniqueUsers(loadMessages);
     });
   };
+
+  handleSearchChange = event => {
+    this.setState(
+      {
+        searchTerm: event.target.value,
+        searchLoading: true
+      },
+      () => this.handleSearchMessages()
+    );
+  };
+
+  handleSearchMessages = () => {
+    const channelMessages = [...this.state.messages];
+    const regex = new RegExp(this.state.searchTerm, "gi");
+    const searchResults = channelMessages.reduce((acc, message) => {
+      if (
+        (message.content && message.content.match(regex)) ||
+        message.user.name.match(regex)
+      ) {
+        acc.push(message);
+      }
+      return acc;
+    }, []);
+    this.setState({ searchResults });
+    setTimeout(() => this.setState({ searchLoading: false }), 1000);
+  };
+  countUniqueUsers = messages => {
+    const uniqueUsers = messages.reduce((acc, message) => {
+      if (!acc.includes(message.user.name)) {
+        acc.push(message.user.name);
+      }
+      return acc;
+    }, []);
+    const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
+    const numUniqueUsers = `${uniqueUsers.length} User${plural ? "s" : ""}`;
+    this.setState({ numUniqueUsers });
+  };
+
   displayMessages = messages =>
     messages.length > 0 &&
     messages.map(message => (
@@ -53,17 +96,35 @@ export default class Messages extends Component {
       this.setState({ progressBar: true });
     }
   };
+  displayChannelName = channel => (channel ? `# ${channel.name}` : "");
 
   render() {
-    const { messagesRef, messages, channel, user, progressBar } = this.state;
+    const {
+      messagesRef,
+      messages,
+      channel,
+      user,
+      progressBar,
+      numUniqueUsers,
+      searchResults,
+      searchTerm,
+      searchLoading
+    } = this.state;
     return (
       <React.Fragment>
-        <Messagesheader />
+        <Messagesheader
+          channelName={this.displayChannelName(channel)}
+          numUniqueUsers={numUniqueUsers}
+          handleSearchChange={this.handleSearchChange}
+          searchLoading={searchLoading}
+        />
         <Segment>
           <Comment.Group
             className={progressBar ? "messages__progress" : "messages"}
           >
-            {this.displayMessages(messages)}
+            {searchTerm
+              ? this.displayMessages(searchResults)
+              : this.displayMessages(messages)}
           </Comment.Group>
         </Segment>
         <MessagesForm
