@@ -78,16 +78,16 @@ export default class Messages extends Component {
     setTimeout(() => this.setState({ searchLoading: false }), 1000);
   };
   countUniqueUsers = messages => {
-    const uniqueUsers = messages.reduce((acc, message) => {
-      if (!acc.includes(message.user.name)) {
-        acc.push(message.user.name);
-      }
-      return acc;
-    }, []);
-    const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
-    const numUniqueUsers = `${uniqueUsers.length} User${plural ? "s" : ""}`;
-    this.setState({ numUniqueUsers });
-  };
+     const uniqueUsers = messages.reduce((acc, message) => {
+       if (!acc.includes(message.user.name)) {
+         acc.push(message.user.name);
+       }
+       return acc;
+     }, []);
+     const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
+     const numUniqueUsers = `${uniqueUsers.length} User${plural ? "s" : ""}`;
+     this.setState({ numUniqueUsers });
+   };
 
   displayMessages = messages =>
     messages.length > 0 &&

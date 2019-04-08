@@ -8,10 +8,13 @@ class Channels extends Component {
   state = {
     activeChannel: "",
     user: this.props.currentUser,
+    channel: null,
     channels: [],
     channelName: "",
     channelDetails: "",
     channelsRef: firebase.database().ref("channels"),
+    messagesRef: firebase.database().ref('messages'),
+    notifications: [],
     modal: false,
     firstLoad: true
   };
@@ -27,8 +30,43 @@ class Channels extends Component {
     this.state.channelsRef.on("child_added", snap => {
       loadChannels.push(snap.val());
       this.setState({ channels: loadChannels }, () => this.setFirstChannel());
+      this.addNotificationListener(snap.key);
     });
   };
+
+  addNotificationListener = channelId =>{
+    this.state.messagesRef.child(channelId).on('value', snap =>{
+      if (this.state.channel){
+        this.handleNotiications(channelId, this.state.channel.id, this.state.notifications, snap );
+      }
+    })
+  }
+
+  handleNotiications = ( channelId, currentChannelId, notifications, snap) =>{
+    let lastTotal = 0;
+
+    let index = notifications.findIndex(notifications=> notifications.id === channelId);
+
+    if (index !== -1){
+      if (channelId !== currentChannelId){
+        lastTotal = notifications[index].total;
+
+        if (snap.numChildren() - lastTotal > 0){
+          notifications[index].count = snap.numChildren() - lastTotal;
+        }
+      }
+      notifications[index].lastknowntotal = snap.numChildren();
+    }else{
+      notifications.push({
+        id: channelId,
+        total: snap.numChildren(),
+        count : 0
+      });
+    }
+    this.setState({  notifications  });
+  }
+
+
   removeListeners = () => {
     this.state.channelsRef.off();
   };
@@ -101,9 +139,23 @@ class Channels extends Component {
     ));
   changeChannel = channel => {
     this.setActiveChannel(channel);
+    this.clearNotifications();
     this.props.setCurrentChannel(channel);
     this.props.setPrivateChannel(false);
+    this.setState({ channel });
   };
+
+  clearNotifications = () => {
+    let index = this.state.notifications.findIndex( notification => notification.id ===
+    this.state.channel.id);
+
+    if (index !== -1) {
+      let updatedNotificatiions = [...this.state.notifications];
+      updatedNotificatiions[index].total = this.state.notifications[index].lastKnowntotal;
+      updatedNotificatiions[index].count = 0;
+      this.setState({ notifications : updatedNotificatiions }) 
+    }
+  }
   setActiveChannel = channel => {
     this.setState({ activeChannel: channel.id });
   };
