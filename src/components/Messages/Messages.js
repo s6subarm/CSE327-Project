@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import { Segment, Comment } from "semantic-ui-react";
-import { connect } from "react-redux";
-import { setUserPosts } from "../../actions";
 import firebase from "../../firebase";
 
 import Messagesheader from "./Messagesheader";
 import MessagesForm from "./MessagesForm";
 import Message from "./Message";
 
-class Messages extends Component {
+export default class Messages extends Component {
   state = {
     privateChannel: this.props.isPrivateChannel,
-    privateMessagesRef: firebase.database().ref('privateMessages'),
+    privateMessagesRef: firebase.database().ref("privateMessages"),
     messagesRef: firebase.database().ref("messages"),
     messages: [],
     messagesLoading: true,
+    isChannelfav: false,
     channel: this.props.currentChannel,
     user: this.props.currentUser,
+    usersRef: firebase.database().ref("user"),
     numUniqueUsers: "",
     searchTerm: "",
     searchLoading: false,
@@ -29,6 +29,7 @@ class Messages extends Component {
 
     if (channel && user) {
       this.addListeners(channel.id);
+      this.addUserFavListeners(channel.id, user.uid);
     }
   }
 
@@ -46,14 +47,26 @@ class Messages extends Component {
         messagesLoading: false
       });
       this.countUniqueUsers(loadMessages);
-      this.countUserPosts(loadMessages);
     });
+  };
+  addUserFavListeners = (channelId, userId) => {
+    this.state.usersRef
+      .child(userId)
+      .child("favourite")
+      .once("value")
+      .then(data => {
+        if (data.val() !== null) {
+          const channelIds = Object.keys(data.val());
+          const prevFav = channelIds.includes(channelId);
+          this.setState({ isChannelfav: prevFav });
+        }
+      });
   };
 
   getMessagesRef = () => {
     const { messagesRef, privateMessagesRef, privateChannel } = this.state;
     return privateChannel ? privateMessagesRef : messagesRef;
-  }
+  };
 
   handleSearchChange = event => {
     this.setState(
@@ -81,31 +94,16 @@ class Messages extends Component {
     setTimeout(() => this.setState({ searchLoading: false }), 1000);
   };
   countUniqueUsers = messages => {
-     const uniqueUsers = messages.reduce((acc, message) => {
-       if (!acc.includes(message.user.name)) {
-         acc.push(message.user.name);
-       }
-       return acc;
-     }, []);
-     const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
-     const numUniqueUsers = `${uniqueUsers.length} User${plural ? "s" : ""}`;
-     this.setState({ numUniqueUsers });
-   };
-
-   countUserPosts = messages =>{
-     let userPosts = messages.reduce((acc, message) => {
-       if (message.user.name in acc){
-         acc[message.user.name].count += 1;
-       } else{
-        acc[message.user.name] = {
-          avatar: message.user.avatar,
-          count: 1
-        } 
-       }
-       return acc;
-     }, {});
-     this.props.setUserPosts(userPosts);
-   };
+    const uniqueUsers = messages.reduce((acc, message) => {
+      if (!acc.includes(message.user.name)) {
+        acc.push(message.user.name);
+      }
+      return acc;
+    }, []);
+    const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
+    const numUniqueUsers = `${uniqueUsers.length} User${plural ? "s" : ""}`;
+    this.setState({ numUniqueUsers });
+  };
 
   displayMessages = messages =>
     messages.length > 0 &&
@@ -123,7 +121,41 @@ class Messages extends Component {
     }
   };
   displayChannelName = channel => {
-    return channel ? `${this.state.isPrivateChannel ? '@' : '#'}${channel.name}` : '';
+    return channel
+      ? `${this.state.privateChannel ? "@" : "#"}${channel.name}`
+      : "";
+  };
+
+  handlefav = () => {
+    this.setState(
+      prevState => ({
+        isChannelfav: !prevState.isChannelfav
+      }),
+      () => this.favChannel()
+    );
+  };
+  favChannel = () => {
+    if (this.state.isChannelfav) {
+      this.state.usersRef.child(`${this.state.user.uid}/favourite`).update({
+        [this.state.channel.id]: {
+          name: this.state.channel.name,
+          details: this.state.channel.details,
+          createdBy: {
+            name: this.state.channel.createdBy.name,
+            avatar: this.state.channel.createdBy.avatar
+          }
+        }
+      });
+    } else {
+      this.state.usersRef
+        .child(`${this.state.user.uid}/favourite`)
+        .child(this.state.channel.id)
+        .remove(err => {
+          if (err !== null) {
+            console.error(err);
+          }
+        });
+    }
   };
 
   render() {
@@ -137,7 +169,8 @@ class Messages extends Component {
       searchResults,
       searchTerm,
       searchLoading,
-      privateChannel
+      privateChannel,
+      isChannelfav
     } = this.state;
     return (
       <React.Fragment>
@@ -147,6 +180,8 @@ class Messages extends Component {
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
+          handlefav={this.handlefav}
+          isChannelfav={isChannelfav}
         />
         <Segment>
           <Comment.Group
@@ -169,8 +204,3 @@ class Messages extends Component {
     );
   }
 }
-
-export default connect(
-  null, 
-  { setUserPosts}
-  )(Messages);

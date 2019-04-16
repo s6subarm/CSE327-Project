@@ -32,11 +32,11 @@ body,
   right: 1em;
   z-index: 200;
 }
-/* sidepanel.js */
+/* sidepanel.js
 .channels {
   height: 200px;
   overflow-y: scroll;
-}
+} */
 
 /* Message.js */
 .messageSelf {
