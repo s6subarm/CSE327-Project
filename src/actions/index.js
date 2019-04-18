@@ -1,33 +1,33 @@
-import * as actionTypes from './types'
+import * as actionTypes from "./types";
 
 // uer actions
 export const setuser = user => {
-    return {
-        type: actionTypes.SET_USER,
-        payload: {
-            currentUser: user
-        }
+  return {
+    type: actionTypes.SET_USER,
+    payload: {
+      currentUser: user
     }
-}
+  };
+};
 
 export const clearUser = () => {
-    return {
-        type: actionTypes.CLEAR_USER
-    }
-}
+  return {
+    type: actionTypes.CLEAR_USER
+  };
+};
 
 // channel actions
 export const setCurrentChannel = channel => {
-    return {
-        type: actionTypes.SET_CURRENT_CHANNEL,
-        payload: {
-            currentChannel: channel
-        }
+  return {
+    type: actionTypes.SET_CURRENT_CHANNEL,
+    payload: {
+      currentChannel: channel
     }
-}
+  };
+};
 
 export const setPrivateChannel = isPrivateChannel => {
-  return{
+  return {
     type: actionTypes.SET_PRIVATE_CHANNEL,
     payload: {
       isPrivateChannel
@@ -36,12 +36,22 @@ export const setPrivateChannel = isPrivateChannel => {
 };
 
 export const setUserPosts = userPosts => {
-    return {
-        type: actionTypes.SET_USER_POSTS,
-        payload: {
-            userPosts
-        }
+  return {
+    type: actionTypes.SET_USER_POSTS,
+    payload: {
+      userPosts
     }
-}
+  };
+};
 
+//color actions
 
+export const setColors = (primaryColor, secondaryColor) => {
+  return {
+    type: actionTypes.SET_COLORS,
+    payload: {
+      primaryColor,
+      secondaryColor
+    }
+  };
+};

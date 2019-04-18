@@ -6,7 +6,8 @@ body,
   padding: 1em;
 }
 
-/*SidePanel.js*/
+/* sidepanel */
+
 .menu {
   padding-bottom: 2em;
 }
@@ -32,8 +33,8 @@ body,
   right: 1em;
   z-index: 200;
 }
-/* sidepanel.js
-.channels {
+/* sidepanel.js */
+/* .channels {
   height: 200px;
   overflow-y: scroll;
 } */
@@ -52,4 +53,25 @@ body,
 
 .progress__bar {
   margin: 0.3em 0 0 0 !important;
+}
+
+/* colorpanel.js */
+
+.color__container {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 35px;
+  border-radius: 3px;
+}
+
+.color__square {
+  width: 35px;
+  height: 35px;
+}
+
+.color__overlay {
+  width: 85px;
+  height: 35px;
+  transform: rotate(225deg);
 }
