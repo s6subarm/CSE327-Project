@@ -23,11 +23,22 @@ class ColorPanel extends Component {
     usersRef: firebase.database().ref("user"),
     userColors: []
   };
+
   componentDidMount() {
     if (this.state.user) {
       this.addListener(this.state.user.uid);
     }
   }
+
+
+  componentWillUnmount(){
+    this.removeListener();
+  }
+
+  removeListener = () => {
+    this.state.usersRef.child(`${this.state.user.uid}/color`).off();
+  }
+  
   addListener = userId => {
     let userColors = [];
     this.state.usersRef.child(`${userId}/colors`).on("child_added", snap => {
