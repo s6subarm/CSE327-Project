@@ -7,7 +7,6 @@
     "firebase": "^5.3.0",
     "md5": "^2.2.1",
     "mime-types": "^2.1.20",
-    "mocha": "^6.1.4",
     "moment": "^2.22.2",
     "react": "^16.4.1",
     "react-avatar-editor": "^11.0.4",
@@ -25,8 +24,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "mocha react-scripts test --env=jsdom",
+    "test": "mocha",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4"
   }
-
 }
